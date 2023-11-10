@@ -76795,4 +76795,23 @@
       </imgdir>
     </imgdir>
   </imgdir>
+  <imgdir name="12001">    
+    <imgdir name="0">
+      <int name="npc" value="9200000"/>
+      <string name="startscript" value="q12001s"/>
+      <int name="lvmin" value="10"/>
+      <int name="interval" value="0"/>
+      <int name="normalAutoStart" value="1"/>      
+    </imgdir>
+    <imgdir name="1">
+      <int name="npc" value="9200000"/>
+      <string name="endscript" value="q12001e"/>
+      <imgdir name="item">
+        <imgdir name="0">
+          <int name="id" value="4001006"/>
+          <int name="count" value="10"/>
+        </imgdir>
+      </imgdir>
+    </imgdir>
+  </imgdir>  
 </imgdir>
