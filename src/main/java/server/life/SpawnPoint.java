@@ -22,6 +22,7 @@
 package server.life;
 
 import client.Character;
+import config.YamlConfig;
 import net.server.Server;
 
 import java.awt.*;
@@ -67,7 +68,7 @@ public class SpawnPoint {
     }
 
     public boolean shouldSpawn() {
-        if (denySpawn || mobTime < 0 || spawnedMonsters.get() > 0) {
+        if (denySpawn || mobTime < 0 || spawnedMonsters.get() > YamlConfig.config.server.MAX_MOBS_PER_SPAWNPOINT - 1) {
             return false;
         }
         return nextPossibleSpawn <= Server.getInstance().getCurrentTime();
@@ -103,7 +104,8 @@ public class SpawnPoint {
             public void monsterHealed(int trueHeal) {}
         });
         if (mobTime == 0) {
-            nextPossibleSpawn = Server.getInstance().getCurrentTime() + mobInterval;
+            //    nextPossibleSpawn = Server.getInstance().getCurrentTime() + mobInterval;
+            nextPossibleSpawn = Server.getInstance().getCurrentTime() -1;
         }
         return mob;
     }

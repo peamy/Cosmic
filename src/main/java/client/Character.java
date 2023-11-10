@@ -6520,22 +6520,21 @@ public class Character extends AbstractCharacterObject {
             return false;
         }
     }
+
+    private int getBonusRateSlot(int level){
+        return level / 20;
+    }
+
     public void setPlayerRates() {
-        this.expRate *= GameConstants.getPlayerBonusExpRate(this.level / 20);
-        this.mesoRate *= GameConstants.getPlayerBonusMesoRate(this.level / 20);
-        this.dropRate *= GameConstants.getPlayerBonusDropRate(this.level / 20);
+        this.expRate *= GameConstants.getPlayerBonusExpRate(getBonusRateSlot(this.level));
+        this.mesoRate *= GameConstants.getPlayerBonusMesoRate(getBonusRateSlot(this.level));
+        this.dropRate *= GameConstants.getPlayerBonusDropRate(getBonusRateSlot(this.level));
     }
 
     public void revertLastPlayerRates() {
-        this.expRate /= GameConstants.getPlayerBonusExpRate((this.level - 1) / 20);
-        this.mesoRate /= GameConstants.getPlayerBonusMesoRate((this.level - 1) / 20);
-        this.dropRate /= GameConstants.getPlayerBonusDropRate((this.level - 1) / 20);
-    }
-
-    public void revertPlayerRates() {
-        this.expRate /= GameConstants.getPlayerBonusExpRate(this.level / 20);
-        this.mesoRate /= GameConstants.getPlayerBonusMesoRate(this.level / 20);
-        this.dropRate /= GameConstants.getPlayerBonusDropRate(this.level / 20);
+        this.expRate /= GameConstants.getPlayerBonusExpRate(getBonusRateSlot(this.level -1));
+        this.mesoRate /= GameConstants.getPlayerBonusMesoRate(getBonusRateSlot(this.level -1));
+        this.dropRate /= GameConstants.getPlayerBonusDropRate(getBonusRateSlot(this.level -1));
     }
 
     public void setWorldRates() {
