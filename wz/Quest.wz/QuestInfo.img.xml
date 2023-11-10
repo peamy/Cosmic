@@ -23797,4 +23797,13 @@ Able to proceed to &apos;Merry-go-round in Kampung&apos; as next quest.
     <string name="2" value="Umi&apos;s spiced vegetables sure sound enticing. I should go get some later~!"/>
     <int name="area" value="48"/>
   </imgdir>
+  <imgdir name="12001">
+    <string name="name" value="It's not easy being alone"/>
+    <string name="0" value="To get you started, let's see if you can gather some items :)"/>
+    <string name="1" value="Feathers: #t4001006# #b#c4001006##k/10"/>
+    <string name="2" value="Good luck!"/>
+    <int name="area" value="50"/>
+    <int name="autoStart" value="1"/>
+    <int name="autoComplete" value="1"/>
+  </imgdir>
 </imgdir>
