@@ -34,6 +34,7 @@ import client.newyear.NewYearCardRecord;
 import client.processor.action.PetAutopotProcessor;
 import client.processor.npc.FredrickProcessor;
 import config.YamlConfig;
+import constants.Enum.SearchType;
 import constants.game.ExpTable;
 import constants.game.GameConstants;
 import constants.id.ItemId;
@@ -261,6 +262,10 @@ public class Character extends AbstractCharacterObject {
     private boolean pendingNameChange; //only used to change name on logout, not to be relied upon elsewhere
     private long loginTime;
     private boolean chasing = false;
+
+
+    public String SearchResult;
+    public SearchType SearchResultType;
 
     private Character() {
         super.setListener(new AbstractCharacterListener() {

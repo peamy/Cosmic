@@ -1224,4 +1224,6 @@ public class AbstractPlayerInteraction {
     private void sendBlueNotice(MapleMap map, String message) {
         map.dropMessage(6, message);
     }
+
+
 }
