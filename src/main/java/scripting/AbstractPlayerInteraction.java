@@ -590,6 +590,14 @@ public class AbstractPlayerInteraction {
         Pet evolved;
         int petId = -1;
 
+        InventoryType itemType = ItemConstants.getInventoryType(id);
+        if (itemType == InventoryType.UNDEFINED ||
+            itemType == InventoryType.EQUIPPED // Not sure if this is also a case here
+        ) {
+            c.getPlayer().dropMessage(1, "Can not gain item of type " + itemType.name() + ".");
+            return null;
+        }
+
         if (quantity >= 0) {
             if (ItemConstants.isPet(id)) {
                 petId = Pet.createPet(id);
@@ -617,7 +625,7 @@ public class AbstractPlayerInteraction {
 
             ItemInformationProvider ii = ItemInformationProvider.getInstance();
 
-            if (ItemConstants.getInventoryType(id).equals(InventoryType.EQUIP)) {
+            if (itemType.equals(InventoryType.EQUIP)) {
                 item = ii.getEquipById(id);
 
                 if (item != null) {
@@ -643,10 +651,10 @@ public class AbstractPlayerInteraction {
             }
 
             if (!InventoryManipulator.checkSpace(c, id, quantity, "")) {
-                c.getPlayer().dropMessage(1, "Your inventory is full. Please remove an item from your " + ItemConstants.getInventoryType(id).name() + " inventory.");
+                c.getPlayer().dropMessage(1, "Your inventory is full. Please remove an item from your " + itemType.name() + " inventory.");
                 return null;
             }
-            if (ItemConstants.getInventoryType(id) == InventoryType.EQUIP) {
+            if (itemType == InventoryType.EQUIP) {
                 if (randomStats) {
                     InventoryManipulator.addFromDrop(c, ii.randomizeStats((Equip) item), false, petId);
                 } else {
@@ -656,7 +664,7 @@ public class AbstractPlayerInteraction {
                 InventoryManipulator.addFromDrop(c, item, false, petId);
             }
         } else {
-            InventoryManipulator.removeById(c, ItemConstants.getInventoryType(id), id, -quantity, true, false);
+            InventoryManipulator.removeById(c, itemType, id, -quantity, true, false);
         }
         if (showMessage) {
             c.sendPacket(PacketCreator.getShowItemGain(id, quantity, true));
