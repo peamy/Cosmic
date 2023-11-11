@@ -22,6 +22,7 @@
 package server.life;
 
 import client.Character;
+import config.YamlConfig;
 import net.server.Server;
 
 import java.awt.*;
@@ -41,6 +42,8 @@ public class SpawnPoint {
     private final AtomicInteger spawnedMonsters = new AtomicInteger(0);
     private final boolean immobile;
     private boolean denySpawn = false;
+
+    private int spawnRateModifier = 1;
 
     public SpawnPoint(final Monster monster, Point pos, boolean immobile, int mobTime, int mobInterval, int team) {
         this.monster = monster.getId();
@@ -67,10 +70,15 @@ public class SpawnPoint {
     }
 
     public boolean shouldSpawn() {
-        if (denySpawn || mobTime < 0 || spawnedMonsters.get() > 0) {
+        if (denySpawn || mobTime < 0 || spawnedMonsters.get() > maxMobsSpawned() - 1) {
             return false;
         }
-        return nextPossibleSpawn <= Server.getInstance().getCurrentTime();
+
+        // Added the check if GLOBAL_MAX_MOBS_PER_SPAWNPOINT > 1.
+        // It bypasses the interval check. But the interval check wasn't doing much in 1x spawnrate anyway. Maybe it was used for pq?
+        // Still has the same behaviour if the GLOBAL_MAX_MOBS_PER_SPAWNPOINT = 1;
+        return nextPossibleSpawn <= Server.getInstance().getCurrentTime()
+                || maxMobsSpawned() > 1; // kinda nasty.
     }
 
     public boolean shouldForceSpawn() {
@@ -130,5 +138,18 @@ public class SpawnPoint {
 
     public int getTeam() {
         return team;
+    }
+
+    public int getSpawnRateModifier() {
+        return spawnRateModifier;
+    }
+
+    public void setSpawnRateModifier(int spawnRateModifier) {
+        this.spawnRateModifier = spawnRateModifier;
+    }
+
+    // Multiplies the max amount of mobs with the spawnrate modifier (not the global spawnrate)
+    private int maxMobsSpawned() {
+        return spawnRateModifier * YamlConfig.config.server.GLOBAL_MAX_MOBS_PER_SPAWNPOINT;
     }
 }
