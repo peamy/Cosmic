@@ -260,6 +260,7 @@ public class CommandsExecutor {
         addCommand("id", 2, IdCommand.class);
         addCommand("gachalist", GachaListCommand.class);
         addCommand("loot", LootCommand.class);
+        addCommand("spawnrate", MapSpawnrateCommand.class);
         addCommand("mobskill", MobSkillCommand.class);
 
         commandsNameDesc.add(levelCommandsCursor);

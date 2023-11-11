@@ -43,6 +43,8 @@ public class SpawnPoint {
     private final boolean immobile;
     private boolean denySpawn = false;
 
+    private int spawnRateModifier = 1;
+
     public SpawnPoint(final Monster monster, Point pos, boolean immobile, int mobTime, int mobInterval, int team) {
         this.monster = monster.getId();
         this.pos = new Point(pos);
@@ -68,10 +70,15 @@ public class SpawnPoint {
     }
 
     public boolean shouldSpawn() {
-        if (denySpawn || mobTime < 0 || spawnedMonsters.get() > YamlConfig.config.server.MAX_MOBS_PER_SPAWNPOINT - 1) {
+        if (denySpawn || mobTime < 0 || spawnedMonsters.get() > maxMobsSpawned() - 1) {
             return false;
         }
-        return nextPossibleSpawn <= Server.getInstance().getCurrentTime();
+
+        // Added the check if GLOBAL_MAX_MOBS_PER_SPAWNPOINT > 1.
+        // It bypasses the interval check. But the interval check wasn't doing much in 1x spawnrate anyway. Maybe it was used for pq?
+        // Still has the same behaviour if the GLOBAL_MAX_MOBS_PER_SPAWNPOINT = 1;
+        return nextPossibleSpawn <= Server.getInstance().getCurrentTime()
+                || maxMobsSpawned() > 1; // kinda nasty.
     }
 
     public boolean shouldForceSpawn() {
@@ -104,8 +111,7 @@ public class SpawnPoint {
             public void monsterHealed(int trueHeal) {}
         });
         if (mobTime == 0) {
-            //    nextPossibleSpawn = Server.getInstance().getCurrentTime() + mobInterval;
-            nextPossibleSpawn = Server.getInstance().getCurrentTime() -1;
+            nextPossibleSpawn = Server.getInstance().getCurrentTime() + mobInterval;
         }
         return mob;
     }
@@ -132,5 +138,18 @@ public class SpawnPoint {
 
     public int getTeam() {
         return team;
+    }
+
+    public int getSpawnRateModifier() {
+        return spawnRateModifier;
+    }
+
+    public void setSpawnRateModifier(int spawnRateModifier) {
+        this.spawnRateModifier = spawnRateModifier;
+    }
+
+    // Multiplies the max amount of mobs with the spawnrate modifier (not the global spawnrate)
+    private int maxMobsSpawned() {
+        return spawnRateModifier * YamlConfig.config.server.GLOBAL_MAX_MOBS_PER_SPAWNPOINT;
     }
 }
