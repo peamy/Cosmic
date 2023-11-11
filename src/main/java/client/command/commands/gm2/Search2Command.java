@@ -21,7 +21,7 @@
 /*
    @Author: Arthur L - Refactored command content into modules
 */
-package client.command.commands.gm0;
+package client.command.commands.gm2;
 
 import client.Character;
 import client.Client;
@@ -35,7 +35,7 @@ import provider.wz.WZFiles;
 import server.ItemInformationProvider;
 import tools.Pair;
 
-public class SearchmeCommand extends Command {
+public class Search2Command extends Command {
 
     private static Data npcStringData;
     private static Data mobStringData;
@@ -60,7 +60,7 @@ public class SearchmeCommand extends Command {
     public void execute(Client c, String[] params) {
         Character player = c.getPlayer();
         if (params.length < 2) {
-            player.yellowMessage("Syntax: !searchme <type> <name>");
+            player.yellowMessage("Syntax: !search <type> <name>");
             return;
         }
 
@@ -118,7 +118,7 @@ public class SearchmeCommand extends Command {
 
         // Tell the player what we found
         //c.getAbstractPlayerInteraction().openNpc(NpcId.MAPLE_ADMINISTRATOR, result);
-        c.getAbstractPlayerInteraction().openNpc(NpcId.MAPLE_ADMINISTRATOR, "searchme");
+        c.getAbstractPlayerInteraction().openNpc(NpcId.MAPLE_ADMINISTRATOR, "search/search".concat(searchtype.toString().toLowerCase()));
     }
 
     private String findItems(String searchTerm){

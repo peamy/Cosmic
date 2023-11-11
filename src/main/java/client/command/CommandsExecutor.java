@@ -203,7 +203,6 @@ public class CommandsExecutor {
         addCommand("mobhp", MobHpCommand.class);
 
         addCommand("peamy", PeamyCommand.class);
-        addCommand("searchme", SearchmeCommand.class);
 
         commandsNameDesc.add(levelCommandsCursor);
     }
@@ -252,7 +251,7 @@ public class CommandsExecutor {
         addCommand("maxstat", 2, MaxStatCommand.class);
         addCommand("maxskill", 2, MaxSkillCommand.class);
         addCommand("resetskill", 2, ResetSkillCommand.class);
-        addCommand("search", 2, SearchCommand.class);
+        addCommand("search", 2, Search2Command.class);
         addCommand("jail", 2, JailCommand.class);
         addCommand("unjail", 2, UnJailCommand.class);
         addCommand("job", 2, JobCommand.class);
