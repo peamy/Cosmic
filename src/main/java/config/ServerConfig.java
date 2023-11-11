@@ -108,8 +108,8 @@ public class ServerConfig {
     public boolean USE_MULTIPLE_SAME_EQUIP_DROP;
     public boolean USE_BANISHABLE_TOWN_SCROLL;
     public boolean USE_ENABLE_FULL_RESPAWN;
-    public int MAX_MOBS_PER_SPAWNPOINT;
-    public double MOB_SPAWN_RATE;
+    public int GLOBAL_MAX_MOBS_PER_SPAWNPOINT;
+    public double GLOBAL_MOB_SPAWN_RATE;
     public boolean USE_ENABLE_CHAT_LOG;
     public boolean USE_REBIRTH_SYSTEM;
     public boolean USE_MAP_OWNERSHIP_SYSTEM;
