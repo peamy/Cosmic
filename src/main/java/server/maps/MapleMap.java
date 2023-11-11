@@ -152,6 +152,8 @@ public class MapleMap {
 
     //CPQ
     private int maxMobs;
+
+    private int mapSpawnRate = 1;
     private int maxReactors;
     private int deathCP;
     private int timeDefault;
@@ -3484,50 +3486,6 @@ public class MapleMap {
         }
     }
 
-    public void instanceMapRespawn() {
-        if (!allowSummons) {
-            return;
-        }
-
-        final int numShouldSpawn = (short) ((monsterSpawn.size() - spawnedMonstersOnMap.get()));//Fking lol'd
-        if (numShouldSpawn > 0) {
-            List<SpawnPoint> randomSpawn = getMonsterSpawn();
-            Collections.shuffle(randomSpawn);
-            int spawned = 0;
-            for (SpawnPoint spawnPoint : randomSpawn) {
-                if (spawnPoint.shouldSpawn()) {
-                    spawnMonster(spawnPoint.getMonster());
-                    spawned++;
-                    if (spawned >= numShouldSpawn) {
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    public void instanceMapForceRespawn() {
-        if (!allowSummons) {
-            return;
-        }
-
-        final int numShouldSpawn = (short) ((monsterSpawn.size() - spawnedMonstersOnMap.get()));//Fking lol'd
-        if (numShouldSpawn > 0) {
-            List<SpawnPoint> randomSpawn = getMonsterSpawn();
-            Collections.shuffle(randomSpawn);
-            int spawned = 0;
-            for (SpawnPoint spawnPoint : randomSpawn) {
-                if (spawnPoint.shouldForceSpawn()) {
-                    spawnMonster(spawnPoint.getMonster());
-                    spawned++;
-                    if (spawned >= numShouldSpawn) {
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
     public void closeMapSpawnPoints() {
         for (SpawnPoint spawnPoint : getMonsterSpawn()) {
             spawnPoint.setDenySpawn(true);
@@ -3574,21 +3532,13 @@ public class MapleMap {
     }
 
     private int getNumShouldSpawn(int numPlayers) {
-        /*
-        System.out.println("----------------------------------");
-        for (SpawnPoint spawnPoint : getMonsterSpawn()) {
-            System.out.println("sp " + spawnPoint.getPosition().getX() + ", " + spawnPoint.getPosition().getY() + ": " + spawnPoint.getDenySpawn());
-        }
-        System.out.println("try " + monsterSpawn.size() + " - " + spawnedMonstersOnMap.get());
-        System.out.println("----------------------------------");
-        */
-
         if (YamlConfig.config.server.USE_ENABLE_FULL_RESPAWN) {
-            return (monsterSpawn.size() - spawnedMonstersOnMap.get());
+            int amountOfMobsIWant = (int) Math.round(monsterSpawn.size() * YamlConfig.config.server.GLOBAL_MOB_SPAWN_RATE * getMapSpawnRate());
+            return (amountOfMobsIWant - spawnedMonstersOnMap.get());
         }
 
-        int maxNumShouldSpawn = (int) Math.ceil(getCurrentSpawnRate(numPlayers) * monsterSpawn.size());
-        return maxNumShouldSpawn - spawnedMonstersOnMap.get();
+        int amountOfMobsIWant = (int) Math.round(getCurrentSpawnRate(numPlayers) * monsterSpawn.size() * YamlConfig.config.server.GLOBAL_MOB_SPAWN_RATE * getMapSpawnRate());
+        return amountOfMobsIWant - spawnedMonstersOnMap.get();
     }
 
     public void respawn() {
@@ -3609,21 +3559,40 @@ public class MapleMap {
         }
 
         int numShouldSpawn = getNumShouldSpawn(numPlayers);
-        if (numShouldSpawn > 0) {
-            List<SpawnPoint> randomSpawn = new ArrayList<>(getMonsterSpawn());
-            Collections.shuffle(randomSpawn);
-            short spawned = 0;
-            for (SpawnPoint spawnPoint : randomSpawn) {
-                if (spawnPoint.shouldSpawn()) {
-                    spawnMonster(spawnPoint.getMonster());
-                    spawned++;
+        List<SpawnPoint> randomSpawn = new ArrayList<>(getMonsterSpawn());
+        Collections.shuffle(randomSpawn);
+        short spawned = 0;
 
-                    if (spawned >= numShouldSpawn) {
-                        break;
-                    }
-                }
+        // spawn random mobs on random spawnpoints.
+        // Either there are no available spawnpoints anymore,
+        // Or we reached the amount of mobs we want to spawn;
+        while(spawned < numShouldSpawn){
+            // All spawnpoints are "full"
+            if(randomSpawn.isEmpty()) {
+                break;
+            }
+            // spawned % randomSpawn.size() is a number between 0 and randomSpawn.size(). We kind of iterate over the list in a weird way.
+            SpawnPoint spawnPoint = randomSpawn.get(spawned % randomSpawn.size());
+            if(spawnPoint.shouldSpawn()) {
+                spawnMonster(spawnPoint.getMonster());
+                spawned++;
+            }
+            else {
+                // Remove from list of available spawnpoints
+                randomSpawn.remove(spawnPoint);
             }
         }
+
+//        for (SpawnPoint spawnPoint : randomSpawn) {
+//            if (spawnPoint.shouldSpawn()) {
+//                spawnMonster(spawnPoint.getMonster());
+//                spawned++;
+//
+//                if (spawned >= numShouldSpawn) {
+//                    break;
+//                }
+//            }
+//        }
     }
 
     public void mobMpRecovery() {
@@ -4025,6 +3994,8 @@ public class MapleMap {
 
         restoreMapSpawnPoints();
         instanceMapFirstSpawn(difficulty, isPq);
+
+        setMapSpawnRate(1);
     }
 
     public void broadcastShip(final boolean state) {
@@ -4452,6 +4423,17 @@ public class MapleMap {
 
     public void setMaxMobs(int maxMobs) {
         this.maxMobs = maxMobs;
+    }
+
+    public int getMapSpawnRate() {
+        return mapSpawnRate;
+    }
+
+    public void setMapSpawnRate(int mapSpawnRate) {
+        this.mapSpawnRate = mapSpawnRate;
+        for(SpawnPoint spawnPoint : monsterSpawn){
+            spawnPoint.setSpawnRateModifier(mapSpawnRate);
+        }
     }
 
     public int getMaxReactors() {
