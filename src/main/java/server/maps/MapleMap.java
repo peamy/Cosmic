@@ -3533,8 +3533,7 @@ public class MapleMap {
 
     private int getNumShouldSpawn(int numPlayers) {
         if (YamlConfig.config.server.USE_ENABLE_FULL_RESPAWN) {
-            int amountOfMobsIWant = (int) Math.round(monsterSpawn.size() * YamlConfig.config.server.GLOBAL_MOB_SPAWN_RATE * getMapSpawnRate());
-            return (amountOfMobsIWant - spawnedMonstersOnMap.get());
+            return (monsterSpawn.size() - spawnedMonstersOnMap.get());
         }
 
         int amountOfMobsIWant = (int) Math.round(getCurrentSpawnRate(numPlayers) * monsterSpawn.size() * YamlConfig.config.server.GLOBAL_MOB_SPAWN_RATE * getMapSpawnRate());
@@ -3559,40 +3558,21 @@ public class MapleMap {
         }
 
         int numShouldSpawn = getNumShouldSpawn(numPlayers);
-        List<SpawnPoint> randomSpawn = new ArrayList<>(getMonsterSpawn());
-        Collections.shuffle(randomSpawn);
-        short spawned = 0;
+        if (numShouldSpawn > 0) {
+            List<SpawnPoint> randomSpawn = new ArrayList<>(getMonsterSpawn());
+            Collections.shuffle(randomSpawn);
+            short spawned = 0;
+            for (SpawnPoint spawnPoint : randomSpawn) {
+                if (spawnPoint.shouldSpawn()) {
+                    spawnMonster(spawnPoint.getMonster());
+                    spawned++;
 
-        // spawn random mobs on random spawnpoints.
-        // Either there are no available spawnpoints anymore,
-        // Or we reached the amount of mobs we want to spawn;
-        while(spawned < numShouldSpawn){
-            // All spawnpoints are "full"
-            if(randomSpawn.isEmpty()) {
-                break;
-            }
-            // spawned % randomSpawn.size() is a number between 0 and randomSpawn.size(). We kind of iterate over the list in a weird way.
-            SpawnPoint spawnPoint = randomSpawn.get(spawned % randomSpawn.size());
-            if(spawnPoint.shouldSpawn()) {
-                spawnMonster(spawnPoint.getMonster());
-                spawned++;
-            }
-            else {
-                // Remove from list of available spawnpoints
-                randomSpawn.remove(spawnPoint);
+                    if (spawned >= numShouldSpawn) {
+                        break;
+                    }
+                }
             }
         }
-
-//        for (SpawnPoint spawnPoint : randomSpawn) {
-//            if (spawnPoint.shouldSpawn()) {
-//                spawnMonster(spawnPoint.getMonster());
-//                spawned++;
-//
-//                if (spawned >= numShouldSpawn) {
-//                    break;
-//                }
-//            }
-//        }
     }
 
     public void mobMpRecovery() {

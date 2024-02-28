@@ -70,7 +70,7 @@ public class SpawnPoint {
     }
 
     public boolean shouldSpawn() {
-        if (denySpawn || mobTime < 0 || spawnedMonsters.get() > maxMobsSpawned() - 1) {
+        if (denySpawn || mobTime < 0 || spawnedMonsters.get() > 0) {
             return false;
         }
 
